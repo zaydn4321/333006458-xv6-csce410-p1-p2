@@ -26,6 +26,7 @@
 #define DBGCTL_SETLEVEL 3
 #define DBGCTL_GETPID   4
 #define DBGCTL_SETPID   5
+#define DBGCTL_SCHEDCHK 6 // run rq_check, returns # of problems
 
 struct dbgcat {
   uint64 bit;

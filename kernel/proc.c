@@ -638,6 +638,37 @@ sched(void)
   mycpu()->intena = intena;
 }
 
+// -1 and no change if out of range. only yields if it actually changed
+int
+setpriority(int pr)
+{
+  struct proc *p = myproc();
+  int old;
+
+  if (pr < 0 || pr >= NB_PRIORITY_LEVELS)
+    return -1;
+  // p is RUNNING so its in no queue, yield() puts it in the new one
+  acquire(&p->lock);
+  old = p->priority;
+  p->priority = pr;
+  release(&p->lock);
+  if (pr != old)
+    yield();
+  return 0;
+}
+
+int
+getpriority(void)
+{
+  struct proc *p = myproc();
+  int pr;
+
+  acquire(&p->lock);
+  pr = p->priority;
+  release(&p->lock);
+  return pr;
+}
+
 // Give up the CPU for one scheduling round.
 void
 yield(void)

@@ -68,6 +68,9 @@ sys_debugctl(void)
     old = __atomic_load_n(&dbg_pid, __ATOMIC_RELAXED);
     __atomic_store_n(&dbg_pid, (int)arg, __ATOMIC_RELAXED);
     return old;
+
+  case DBGCTL_SCHEDCHK:
+    return rq_check();
   }
 
   return -1;
