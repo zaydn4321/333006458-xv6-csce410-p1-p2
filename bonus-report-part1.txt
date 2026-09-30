@@ -1,0 +1,31 @@
+P2 Bonus Part 1 - plan for next 2 hours
+Zayd Nadir 333006458
+
+First 10 min
+- delete .github/workflows, set CPUS to 1 in Makefile
+- build and run usertests to make sure everything works before changing anything
+
+Next 50 min - queues
+- add NB_PRIORITY_LEVELS to param.h
+- add priority and a next pointer to struct proc
+- make a linked list queue for each priority level with one lock
+- change scheduler() to pick from the highest priority queue that isnt empty
+- add procs to the queue everywhere they become RUNNABLE (userinit, fork,
+  yield, wakeup, kill)
+- set priority to 1 in allocproc and freeproc, fork copies the parent's priority
+- print priority in procdump
+- commit when it boots
+
+Next 20 min - syscalls
+- add setpriority and getpriority (syscall.h, syscall.c, sysproc.c, user.h,
+  usys.pl)
+- setpriority returns -1 for bad values and yields if priority changed
+- commit
+
+Next 30 min - test program
+- write user/prtest.c to check default priority, bad values, fork inheriting
+  priority, and a priority 0 process finishing before a priority 2 one
+- commit
+
+Last 10 min
+- run usertests again, make sure theres no warnings, push
