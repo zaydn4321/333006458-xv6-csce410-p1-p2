@@ -1,0 +1,25 @@
+P2 Bonus Part 2
+Zayd Nadir 333006458
+
+Session: 15:34 - 17:34
+I wrote most of the code in an earlier try today, then reset and redid the
+commits one part at a time and tested each one.
+
+What I got done
+- removed workflows, set CPUS to 1, usertests passed before changes
+- priority queues (linked list per level, one lock), everything that becomes
+  RUNNABLE gets queued, scheduler picks the highest priority, fork copies
+  priority
+- setpriority and getpriority
+- prtest, all 8 checks pass
+
+Different from plan
+- added rq_check() so prtest can check the queues are right
+- kept the sched debug print from P1 since it's off by default
+
+Problems
+- prtest wouldn't compile at first bc of an unused variable warning, fixed it
+- usertests hung once on sbrkfail but passed the next 7 times, couldn't
+  figure out why yet
+
+Didn't get to: starvation, scheduler trace, harder tests
