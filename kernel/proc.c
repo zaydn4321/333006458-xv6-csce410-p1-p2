@@ -27,6 +27,106 @@ extern char trampoline[]; // trampoline.S
 // must be acquired before any p->lock.
 struct spinlock wait_lock;
 
+// ready queues, one fifo per priority. linked through p->qnext.
+// lock order is p->lock then rq.lock, rq.lock is a leaf.
+struct {
+  struct spinlock lock;
+  struct proc *head[NB_PRIORITY_LEVELS];
+  struct proc *tail[NB_PRIORITY_LEVELS];
+} rq;
+
+static void
+rq_push(struct proc *p)
+{
+  int pr = p->priority;
+
+  acquire(&rq.lock);
+  p->qnext = 0;
+  if (rq.tail[pr])
+    rq.tail[pr]->qnext = p;
+  else
+    rq.head[pr] = p;
+  rq.tail[pr] = p;
+  release(&rq.lock);
+}
+
+// highest priority first, 0 if nothing is ready
+static struct proc *
+rq_pop(void)
+{
+  struct proc *p = 0;
+
+  acquire(&rq.lock);
+  for (int i = 0; i < NB_PRIORITY_LEVELS; i++) {
+    if ((p = rq.head[i]) != 0) {
+      rq.head[i] = p->qnext;
+      if (rq.head[i] == 0)
+        rq.tail[i] = 0;
+      p->qnext = 0;
+      break;
+    }
+  }
+  release(&rq.lock);
+  return p;
+}
+
+// every RUNNABLE -> goes through here. caller holds p->lock
+static void
+make_runnable(struct proc *p)
+{
+  p->state = RUNNABLE;
+  rq_push(p);
+}
+
+// walks the queues and proc[] looking for broken invariants.
+// returns # of problems. only a consistent snapshot with CPUS=1
+int
+rq_check(void)
+{
+  int seen[NPROC] = { 0 };
+  int bad = 0;
+  struct proc *p, *last;
+
+  acquire(&rq.lock);
+  for (int i = 0; i < NB_PRIORITY_LEVELS; i++) {
+    int n = 0;
+    last = 0;
+    for (p = rq.head[i]; p != 0; p = p->qnext) {
+      if (++n > NPROC) {
+        printk("rq_check: cycle in queue %d\n", i);
+        bad++;
+        break;
+      }
+      if (seen[p - proc]++) {
+        printk("rq_check: pid %d queued twice\n", p->pid);
+        bad++;
+      }
+      if (p->state != RUNNABLE) {
+        printk("rq_check: pid %d queued but state %d\n", p->pid, p->state);
+        bad++;
+      }
+      if (p->priority != i) {
+        printk("rq_check: pid %d prio %d in queue %d\n", p->pid, p->priority,
+               i);
+        bad++;
+      }
+      last = p;
+    }
+    if (rq.tail[i] != last) {
+      printk("rq_check: queue %d tail is wrong\n", i);
+      bad++;
+    }
+  }
+  for (p = proc; p < &proc[NPROC]; p++) {
+    if (p->state == RUNNABLE && !seen[p - proc]) {
+      printk("rq_check: runnable pid %d in no queue\n", p->pid);
+      bad++;
+    }
+  }
+  release(&rq.lock);
+  return bad;
+}
+
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
 // guard page.
@@ -52,6 +152,7 @@ procinit(void)
 
   initlock(&pid_lock, "nextpid");
   initlock(&wait_lock, "wait_lock");
+  initlock(&rq.lock, "rq");
   for (p = proc; p < &proc[NPROC]; p++) {
     initlock(&p->lock, "proc");
     p->state = UNUSED;
@@ -126,6 +227,8 @@ allocproc(void)
 found:
   p->pid = allocpid();
   p->state = USED;
+  p->priority = DEFAULT_PRIORITY;
+  p->qnext = 0;
 
   // Allocate a trapframe page.
   if ((p->trapframe = (struct trapframe *)kalloc()) == 0) {
@@ -178,6 +281,8 @@ freeproc(struct proc *p)
   p->chan = 0;
   p->killed = 0;
   p->xstate = 0;
+  p->priority = DEFAULT_PRIORITY;
+  p->qnext = 0;
   p->state = UNUSED;
 }
 
@@ -236,7 +341,7 @@ userinit(void)
 
   p->cwd = namei("/");
 
-  p->state = RUNNABLE;
+  make_runnable(p);
 
   dprintf(DBG_PROC, DBG_INFO, "first user process created, pid %d", p->pid);
 
@@ -304,6 +409,7 @@ kfork(void)
   np->cwd = idup(p->cwd);
 
   safestrcpy(np->name, p->name, sizeof(p->name));
+  np->priority = p->priority;
 
   pid = np->pid;
 
@@ -314,7 +420,7 @@ kfork(void)
   release(&wait_lock);
 
   acquire(&np->lock);
-  np->state = RUNNABLE;
+  make_runnable(np);
   release(&np->lock);
 
   dprintf(DBG_PROC, DBG_INFO, "parent %d forked child %d, copied %lu bytes",
@@ -470,36 +576,38 @@ scheduler(void)
     intr_on();
     intr_off();
 
-    int found = 0;
-    for (p = proc; p < &proc[NPROC]; p++) {
-      acquire(&p->lock);
-      if (p->state == RUNNABLE) {
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-        p->state = RUNNING;
-        c->proc = p;
-
-        // p->pid, not myproc(), which isnt set up yet here
-        dprintf(DBG_SCHED, DBG_TRACE, "cpu %d switching to pid %d (%s)",
-                cpuid(), p->pid, p->name);
-
-        swtch(&c->context, &p->context);
-
-        // Don't re-enable interrupts on release.
-        mycpu()->intena = 0;
-
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
-        found = 1;
-      }
-      release(&p->lock);
-    }
-    if (found == 0) {
+    // popped procs are RUNNABLE and in no queue, nobody else moves them
+    // off RUNNABLE, so taking p->lock after rq.lock is dropped is ok
+    p = rq_pop();
+    if (p == 0) {
       // nothing to run; stop running on this core until an interrupt.
       asm volatile("wfi");
+      continue;
     }
+
+    acquire(&p->lock);
+    if (p->state != RUNNABLE)
+      panic("scheduler: queued proc not runnable");
+
+    // Switch to chosen process.  It is the process's job
+    // to release its lock and then reacquire it
+    // before jumping back to us.
+    p->state = RUNNING;
+    c->proc = p;
+
+    // p->pid, not myproc(), which isnt set up yet here
+    dprintf(DBG_SCHED, DBG_TRACE, "cpu %d switching to pid %d (%s) prio %d",
+            cpuid(), p->pid, p->name, p->priority);
+
+    swtch(&c->context, &p->context);
+
+    // Don't re-enable interrupts on release.
+    mycpu()->intena = 0;
+
+    // Process is done running for now.
+    // It should have changed its p->state before coming back.
+    c->proc = 0;
+    release(&p->lock);
   }
 }
 
@@ -536,7 +644,7 @@ yield(void)
 {
   struct proc *p = myproc();
   acquire(&p->lock);
-  p->state = RUNNABLE;
+  make_runnable(p); // takes and drops rq.lock, so sched() still sees noff==1
   sched();
   release(&p->lock);
 }
@@ -622,7 +730,7 @@ wakeup(void *chan)
       // If this waiting process has gotten so far as to actually
       // go to sleep, also set it back to RUNNING.
       if (p->state == SLEEPING) {
-        p->state = RUNNABLE;
+        make_runnable(p);
       }
     }
     release(&p->lock);
@@ -643,7 +751,7 @@ kkill(int pid)
       p->killed = 1;
       if (p->state == SLEEPING) {
         // Wake process from sleep().
-        p->state = RUNNABLE;
+        make_runnable(p);
       }
       release(&p->lock);
       dprintf(DBG_PROC, DBG_INFO, "pid %d killed pid %d", dbg_curpid(), pid);
@@ -732,7 +840,8 @@ procdump(void)
       state = states[p->state];
     else
       state = "???";
-    printk("%d %s %s", p->pid, state, p->name);
+    printk("%d %s %s prio %d", p->pid, state, p->name, p->priority);
     printk("\n");
   }
+  rq_check();
 }

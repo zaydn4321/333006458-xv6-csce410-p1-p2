@@ -12,3 +12,12 @@
 #define FSSIZE      2000              // size of file system in blocks
 #define MAXPATH     128               // maximum file path name
 #define USERSTACK   1                 // user stack pages
+
+// override with make CFLAGS+=-DNB_PRIORITY_LEVELS=n
+#ifndef NB_PRIORITY_LEVELS
+#define NB_PRIORITY_LEVELS 4
+#endif
+#define DEFAULT_PRIORITY 1
+#if NB_PRIORITY_LEVELS < 2
+#error "NB_PRIORITY_LEVELS must be >= 2 (default priority is 1)"
+#endif
