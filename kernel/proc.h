@@ -92,6 +92,7 @@ struct proc {
 
   // rq lock (proc.c) must be held when using this:
   struct proc *qnext; // next in the same ready queue
+  uint qtime;         // ticks when it was queued
 
   // wait_lock must be held when using this:
   struct proc *parent; // Parent process

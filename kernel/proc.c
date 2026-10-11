@@ -42,6 +42,8 @@ rq_push(struct proc *p)
 
   acquire(&rq.lock);
   p->qnext = 0;
+  // no tickslock here, clockintr holds it while taking p->lock and rq.lock
+  p->qtime = __atomic_load_n(&ticks, __ATOMIC_RELAXED);
   if (rq.tail[pr])
     rq.tail[pr]->qnext = p;
   else
@@ -50,21 +52,34 @@ rq_push(struct proc *p)
   release(&rq.lock);
 }
 
-// highest priority first, 0 if nothing is ready
+// highest priority first, 0 if nothing is ready.
+// starvation: queues are fifo so heads are the longest waiters, if one has
+// waited STARVE_TICKS the oldest head goes instead. priority stays the same
 static struct proc *
 rq_pop(void)
 {
-  struct proc *p = 0;
+  struct proc *p;
+  int pick = -1, old = -1;
+  uint now = __atomic_load_n(&ticks, __ATOMIC_RELAXED);
 
   acquire(&rq.lock);
   for (int i = 0; i < NB_PRIORITY_LEVELS; i++) {
-    if ((p = rq.head[i]) != 0) {
-      rq.head[i] = p->qnext;
-      if (rq.head[i] == 0)
-        rq.tail[i] = 0;
-      p->qnext = 0;
-      break;
-    }
+    if ((p = rq.head[i]) == 0)
+      continue;
+    if (pick < 0)
+      pick = i;
+    if (old < 0 || now - p->qtime > now - rq.head[old]->qtime)
+      old = i;
+  }
+  if (pick >= 0 && now - rq.head[old]->qtime >= STARVE_TICKS)
+    pick = old;
+  p = 0;
+  if (pick >= 0) {
+    p = rq.head[pick];
+    rq.head[pick] = p->qnext;
+    if (rq.head[pick] == 0)
+      rq.tail[pick] = 0;
+    p->qnext = 0;
   }
   release(&rq.lock);
   return p;
@@ -229,6 +244,7 @@ found:
   p->state = USED;
   p->priority = DEFAULT_PRIORITY;
   p->qnext = 0;
+  p->qtime = 0;
 
   // Allocate a trapframe page.
   if ((p->trapframe = (struct trapframe *)kalloc()) == 0) {
@@ -283,6 +299,7 @@ freeproc(struct proc *p)
   p->xstate = 0;
   p->priority = DEFAULT_PRIORITY;
   p->qnext = 0;
+  p->qtime = 0;
   p->state = UNUSED;
 }
 

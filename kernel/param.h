@@ -18,6 +18,8 @@
 #define NB_PRIORITY_LEVELS 4
 #endif
 #define DEFAULT_PRIORITY 1
+// a proc waiting this many ticks in a ready queue gets one turn no matter its priority
+#define STARVE_TICKS 10
 #if NB_PRIORITY_LEVELS < 2
 #error "NB_PRIORITY_LEVELS must be >= 2 (default priority is 1)"
 #endif

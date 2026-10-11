@@ -98,6 +98,35 @@ test_order(void)
   check(buf[0] == 'H' && buf[1] == 'L', "prio 0 finishes before prio 2");
 }
 
+// parent hogs the cpu at prio 0 without sleeping. without starvation
+// prevention the lowest prio child only runs once the parent stops
+static void
+test_starve(void)
+{
+  int fds[2];
+  int tchild = -1;
+
+  pipe(fds);
+  setpriority(0);
+  int pid = fork();
+  if (pid == 0) {
+    close(fds[0]);
+    setpriority(NB_PRIORITY_LEVELS - 1);
+    tchild = uptime();
+    write(fds[1], &tchild, sizeof(tchild));
+    exit(0);
+  }
+  close(fds[1]);
+  int end = uptime() + 5 * STARVE_TICKS;
+  while (uptime() < end)
+    ;
+  read(fds[0], &tchild, sizeof(tchild));
+  close(fds[0]);
+  wait(0);
+  setpriority(DEFAULT_PRIORITY);
+  check(tchild >= 0 && tchild < end, "low prio child runs while prio 0 spins");
+}
+
 int
 main(void)
 {
@@ -106,6 +135,7 @@ main(void)
   test_valid();
   test_inherit();
   test_order();
+  test_starve();
   check(debugctl(DBGCTL_SCHEDCHK, 0) == 0, "rq_check clean at end");
   printf(fails ? "prtest: %d FAILED\n" : "prtest: all OK\n", fails);
   exit(fails != 0);
