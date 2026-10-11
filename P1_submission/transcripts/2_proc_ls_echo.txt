@@ -1,0 +1,48 @@
+xv6 kernel is booting
+
+hart 1 starting
+hart 2 starting
+init: starting sh
+$ dbg on proc
+mask  0x1 proc
+level 3 (info)
+pid   any
+[proc   ][3][kexit] pid 3 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 3, status 0
+$ ls
+[proc   ][2][kfork] parent 2 forked child 4, copied 20480 bytes
+[proc   ][4][kexec] pid 4: exec ls, argc 1, sz 16384
+.              1 1 1024
+..             1 1 1024
+README         2 2 2441
+cat            2 3 37360
+echo           2 4 36176
+forktest       2 5 17880
+grep           2 6 40880
+init           2 7 36520
+kill           2 8 36080
+ln             2 9 35880
+ls             2 10 39416
+mkdir          2 11 36136
+rm             2 12 36128
+sh             2 13 59696
+stressfs       2 14 36960
+usertests      2 15 203448
+grind          2 16 51992
+wc             2 17 38360
+zombie         2 18 35416
+logstress      2 19 38128
+forphan        2 20 36880
+dorphan        2 21 36336
+sync           2 22 35520
+dbg            2 23 47568
+console        3 24 0
+[proc   ][4][kexit] pid 4 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 4, status 0
+$ echo hi
+[proc   ][2][kfork] parent 2 forked child 5, copied 20480 bytes
+[proc   ][5][kexec] pid 5: exec echo, argc 2, sz 16384
+hi
+[proc   ][5][kexit] pid 5 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 5, status 0
+$

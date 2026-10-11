@@ -1,0 +1,337 @@
+xv6 kernel is booting
+
+hart 2 starting
+hart 1 starting
+init: starting sh
+$ dbg on proc
+mask  0x1 proc
+level 3 (info)
+pid   any
+[proc   ][3][kexit] pid 3 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 3, status 0
+$ dbg level trace
+[proc   ][2][kfork] parent 2 forked child 4, copied 20480 bytes
+[proc   ][4][kexec] pid 4: exec dbg, argc 3, sz 20480
+mask  0x1 proc
+level 4 (trace)
+pid   any
+[proc   ][4][kexit] pid 4 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 4, status 0
+[proc   ][2][freeproc] freeing pid 4 (dbg), slot 2
+$ forktest
+[proc   ][2][allocproc] allocated pid 5 in slot 2
+[proc   ][2][kfork] parent 2 forked child 5, copied 20480 bytes
+[proc   ][5][kexec] pid 5: exec forktest, argc 1, sz 12288
+fork test
+[proc   ][5][allocproc] allocated pid 6 in slot 3
+[proc   ][5][kfork] parent 5 forked child 6, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 7 in slot 4
+[proc   ][5][kfork] parent 5 forked child 7, copied 12288 bytes
+[proc   ][6][kexit] pid 6 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 8 in slot 5
+[proc   ][5][kfork] parent 5 forked child 8, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 9 in slot 6
+[proc   ][5][kfork] parent 5 forked child 9, copied 12288 bytes
+[proc   ][7][kexit] pid 7 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 10 in slot 7
+[proc   ][8][kexit] pid 8 exiting, status 0, 0 reparented
+[proc   ][9][kexit] pid 9 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 10, copied 12288 bytes
+[proc   ][10][kexit] pid 10 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 11 in slot 8
+[proc   ][5][kfork] parent 5 forked child 11, copied 12288 bytes
+[proc   ][11][kexit] pid 11 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 12 in slot 9
+[proc   ][5][kfork] parent 5 forked child 12, copied 12288 bytes
+[proc   ][12][kexit] pid 12 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 13 in slot 10
+[proc   ][5][kfork] parent 5 forked child 13, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 14 in slot 11
+[proc   ][13][kexit] pid 13 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 14, copied 12288 bytes
+[proc   ][14][kexit] pid 14 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 15 in slot 12
+[proc   ][5][kfork] parent 5 forked child 15, copied 12288 bytes
+[proc   ][15][kexit] pid 15 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 16 in slot 13
+[proc   ][5][kfork] parent 5 forked child 16, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 17 in slot 14
+[proc   ][16][kexit] pid 16 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 17, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 18 in slot 15
+[proc   ][5][kfork] parent 5 forked child 18, copied 12288 bytes
+[proc   ][17][kexit] pid 17 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 19 in slot 16
+[proc   ][5][kfork] parent 5 forked child 19, copied 12288 bytes
+[proc   ][18][kexit] pid 18 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 20 in slot 17
+[proc   ][5][kfork] parent 5 forked child 20, copied 12288 bytes
+[proc   ][19][kexit] pid 19 exiting, status 0, 0 reparented
+[proc   ][20][kexit] pid 20 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 21 in slot 18
+[proc   ][5][kfork] parent 5 forked child 21, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 22 in slot 19
+[proc   ][21][kexit] pid 21 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 22, copied 12288 bytes
+[proc   ][22][kexit] pid 22 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 23 in slot 20
+[proc   ][5][kfork] parent 5 forked child 23, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 24 in slot 21
+[proc   ][23][kexit] pid 23 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 24, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 25 in slot 22
+[proc   ][5][kfork] parent 5 forked child 25, copied 12288 bytes
+[proc   ][24][kexit] pid 24 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 26 in slot 23
+[proc   ][5][kfork] parent 5 forked child 26, copied 12288 bytes
+[proc   ][26][kexit] pid 26 exiting, status 0, 0 reparented
+[proc   ][25][kexit] pid 25 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 27 in slot 24
+[proc   ][5][kfork] parent 5 forked child 27, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 28 in slot 25
+[proc   ][27][kexit] pid 27 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 28, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 29 in slot 26
+[proc   ][5][kfork] parent 5 forked child 29, copied 12288 bytes
+[proc   ][28][kexit] pid 28 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 30 in slot 27
+[proc   ][5][kfork] parent 5 forked child 30, copied 12288 bytes
+[proc   ][29][kexit] pid 29 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 31 in slot 28
+[proc   ][5][kfork] parent 5 forked child 31, copied 12288 bytes
+[proc   ][30][kexit] pid 30 exiting, status 0, 0 reparented
+[proc   ][31][kexit] pid 31 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 32 in slot 29
+[proc   ][5][kfork] parent 5 forked child 32, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 33 in slot 30
+[proc   ][5][kfork] parent 5 forked child 33, copied 12288 bytes
+[proc   ][32][kexit] pid 32 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 34 in slot 31
+[proc   ][5][kfork] parent 5 forked child 34, copied 12288 bytes
+[proc   ][33][kexit] pid 33 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 35 in slot 32
+[proc   ][5][kfork] parent 5 forked child 35, copied 12288 bytes
+[proc   ][34][kexit] pid 34 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 36 in slot 33
+[proc   ][5][kfork] parent 5 forked child 36, copied 12288 bytes
+[proc   ][35][kexit] pid 35 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 37 in slot 34
+[proc   ][36][kexit] pid 36 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 37, copied 12288 bytes
+[proc   ][37][kexit] pid 37 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 38 in slot 35
+[proc   ][5][kfork] parent 5 forked child 38, copied 12288 bytes
+[proc   ][38][kexit] pid 38 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 39 in slot 36
+[proc   ][5][kfork] parent 5 forked child 39, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 40 in slot 37
+[proc   ][5][kfork] parent 5 forked child 40, copied 12288 bytes
+[proc   ][39][kexit] pid 39 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 41 in slot 38
+[proc   ][5][kfork] parent 5 forked child 41, copied 12288 bytes
+[proc   ][40][kexit] pid 40 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 42 in slot 39
+[proc   ][5][kfork] parent 5 forked child 42, copied 12288 bytes
+[proc   ][41][kexit] pid 41 exiting, status 0, 0 reparented
+[proc   ][42][kexit] pid 42 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 43 in slot 40
+[proc   ][5][kfork] parent 5 forked child 43, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 44 in slot 41
+[proc   ][43][kexit] pid 43 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 44, copied 12288 bytes
+[proc   ][44][kexit] pid 44 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 45 in slot 42
+[proc   ][5][kfork] parent 5 forked child 45, copied 12288 bytes
+[proc   ][45][kexit] pid 45 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 46 in slot 43
+[proc   ][5][kfork] parent 5 forked child 46, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 47 in slot 44
+[proc   ][46][kexit] pid 46 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 47, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 48 in slot 45
+[proc   ][5][kfork] parent 5 forked child 48, copied 12288 bytes
+[proc   ][47][kexit] pid 47 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 49 in slot 46
+[proc   ][5][kfork] parent 5 forked child 49, copied 12288 bytes
+[proc   ][48][kexit] pid 48 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 50 in slot 47
+[proc   ][5][kfork] parent 5 forked child 50, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 51 in slot 48
+[proc   ][5][kfork] parent 5 forked child 51, copied 12288 bytes
+[proc   ][49][kexit] pid 49 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 52 in slot 49
+[proc   ][50][kexit] pid 50 exiting, status 0, 0 reparented
+[proc   ][51][kexit] pid 51 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 52, copied 12288 bytes
+[proc   ][52][kexit] pid 52 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 53 in slot 50
+[proc   ][5][kfork] parent 5 forked child 53, copied 12288 bytes
+[proc   ][53][kexit] pid 53 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 54 in slot 51
+[proc   ][5][kfork] parent 5 forked child 54, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 55 in slot 52
+[proc   ][54][kexit] pid 54 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 55, copied 12288 bytes
+[proc   ][55][kexit] pid 55 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 56 in slot 53
+[proc   ][5][kfork] parent 5 forked child 56, copied 12288 bytes
+[proc   ][56][kexit] pid 56 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 57 in slot 54
+[proc   ][5][kfork] parent 5 forked child 57, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 58 in slot 55
+[proc   ][57][kexit] pid 57 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 58, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 59 in slot 56
+[proc   ][58][kexit] pid 58 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 59, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 60 in slot 57
+[proc   ][59][kexit] pid 59 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 60, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 61 in slot 58
+[proc   ][60][kexit] pid 60 exiting, status 0, 0 reparented
+[proc   ][5][kfork] parent 5 forked child 61, copied 12288 bytes
+[proc   ][5][allocproc] allocated pid 62 in slot 59
+[proc   ][5][kfork] parent 5 forked child 62, copied 12288 bytes
+[proc   ][61][kexit] pid 61 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 63 in slot 60
+[proc   ][5][kfork] parent 5 forked child 63, copied 12288 bytes
+[proc   ][62][kexit] pid 62 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 64 in slot 61
+[proc   ][5][kfork] parent 5 forked child 64, copied 12288 bytes
+[proc   ][63][kexit] pid 63 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 65 in slot 62
+[proc   ][5][kfork] parent 5 forked child 65, copied 12288 bytes
+[proc   ][64][kexit] pid 64 exiting, status 0, 0 reparented
+[proc   ][65][kexit] pid 65 exiting, status 0, 0 reparented
+[proc   ][5][allocproc] allocated pid 66 in slot 63
+[proc   ][5][kfork] parent 5 forked child 66, copied 12288 bytes
+[proc   ][5][allocproc] no free proc slot
+[proc   ][66][kexit] pid 66 exiting, status 0, 0 reparented
+[proc   ][5][kfork] pid 5: allocproc failed
+[proc   ][5][kwait] parent 5 reaped child 6, status 0
+[proc   ][5][freeproc] freeing pid 6 (forktest), slot 3
+[proc   ][5][kwait] parent 5 reaped child 7, status 0
+[proc   ][5][freeproc] freeing pid 7 (forktest), slot 4
+[proc   ][5][kwait] parent 5 reaped child 8, status 0
+[proc   ][5][freeproc] freeing pid 8 (forktest), slot 5
+[proc   ][5][kwait] parent 5 reaped child 9, status 0
+[proc   ][5][freeproc] freeing pid 9 (forktest), slot 6
+[proc   ][5][kwait] parent 5 reaped child 10, status 0
+[proc   ][5][freeproc] freeing pid 10 (forktest), slot 7
+[proc   ][5][kwait] parent 5 reaped child 11, status 0
+[proc   ][5][freeproc] freeing pid 11 (forktest), slot 8
+[proc   ][5][kwait] parent 5 reaped child 12, status 0
+[proc   ][5][freeproc] freeing pid 12 (forktest), slot 9
+[proc   ][5][kwait] parent 5 reaped child 13, status 0
+[proc   ][5][freeproc] freeing pid 13 (forktest), slot 10
+[proc   ][5][kwait] parent 5 reaped child 14, status 0
+[proc   ][5][freeproc] freeing pid 14 (forktest), slot 11
+[proc   ][5][kwait] parent 5 reaped child 15, status 0
+[proc   ][5][freeproc] freeing pid 15 (forktest), slot 12
+[proc   ][5][kwait] parent 5 reaped child 16, status 0
+[proc   ][5][freeproc] freeing pid 16 (forktest), slot 13
+[proc   ][5][kwait] parent 5 reaped child 17, status 0
+[proc   ][5][freeproc] freeing pid 17 (forktest), slot 14
+[proc   ][5][kwait] parent 5 reaped child 18, status 0
+[proc   ][5][freeproc] freeing pid 18 (forktest), slot 15
+[proc   ][5][kwait] parent 5 reaped child 19, status 0
+[proc   ][5][freeproc] freeing pid 19 (forktest), slot 16
+[proc   ][5][kwait] parent 5 reaped child 20, status 0
+[proc   ][5][freeproc] freeing pid 20 (forktest), slot 17
+[proc   ][5][kwait] parent 5 reaped child 21, status 0
+[proc   ][5][freeproc] freeing pid 21 (forktest), slot 18
+[proc   ][5][kwait] parent 5 reaped child 22, status 0
+[proc   ][5][freeproc] freeing pid 22 (forktest), slot 19
+[proc   ][5][kwait] parent 5 reaped child 23, status 0
+[proc   ][5][freeproc] freeing pid 23 (forktest), slot 20
+[proc   ][5][kwait] parent 5 reaped child 24, status 0
+[proc   ][5][freeproc] freeing pid 24 (forktest), slot 21
+[proc   ][5][kwait] parent 5 reaped child 25, status 0
+[proc   ][5][freeproc] freeing pid 25 (forktest), slot 22
+[proc   ][5][kwait] parent 5 reaped child 26, status 0
+[proc   ][5][freeproc] freeing pid 26 (forktest), slot 23
+[proc   ][5][kwait] parent 5 reaped child 27, status 0
+[proc   ][5][freeproc] freeing pid 27 (forktest), slot 24
+[proc   ][5][kwait] parent 5 reaped child 28, status 0
+[proc   ][5][freeproc] freeing pid 28 (forktest), slot 25
+[proc   ][5][kwait] parent 5 reaped child 29, status 0
+[proc   ][5][freeproc] freeing pid 29 (forktest), slot 26
+[proc   ][5][kwait] parent 5 reaped child 30, status 0
+[proc   ][5][freeproc] freeing pid 30 (forktest), slot 27
+[proc   ][5][kwait] parent 5 reaped child 31, status 0
+[proc   ][5][freeproc] freeing pid 31 (forktest), slot 28
+[proc   ][5][kwait] parent 5 reaped child 32, status 0
+[proc   ][5][freeproc] freeing pid 32 (forktest), slot 29
+[proc   ][5][kwait] parent 5 reaped child 33, status 0
+[proc   ][5][freeproc] freeing pid 33 (forktest), slot 30
+[proc   ][5][kwait] parent 5 reaped child 34, status 0
+[proc   ][5][freeproc] freeing pid 34 (forktest), slot 31
+[proc   ][5][kwait] parent 5 reaped child 35, status 0
+[proc   ][5][freeproc] freeing pid 35 (forktest), slot 32
+[proc   ][5][kwait] parent 5 reaped child 36, status 0
+[proc   ][5][freeproc] freeing pid 36 (forktest), slot 33
+[proc   ][5][kwait] parent 5 reaped child 37, status 0
+[proc   ][5][freeproc] freeing pid 37 (forktest), slot 34
+[proc   ][5][kwait] parent 5 reaped child 38, status 0
+[proc   ][5][freeproc] freeing pid 38 (forktest), slot 35
+[proc   ][5][kwait] parent 5 reaped child 39, status 0
+[proc   ][5][freeproc] freeing pid 39 (forktest), slot 36
+[proc   ][5][kwait] parent 5 reaped child 40, status 0
+[proc   ][5][freeproc] freeing pid 40 (forktest), slot 37
+[proc   ][5][kwait] parent 5 reaped child 41, status 0
+[proc   ][5][freeproc] freeing pid 41 (forktest), slot 38
+[proc   ][5][kwait] parent 5 reaped child 42, status 0
+[proc   ][5][freeproc] freeing pid 42 (forktest), slot 39
+[proc   ][5][kwait] parent 5 reaped child 43, status 0
+[proc   ][5][freeproc] freeing pid 43 (forktest), slot 40
+[proc   ][5][kwait] parent 5 reaped child 44, status 0
+[proc   ][5][freeproc] freeing pid 44 (forktest), slot 41
+[proc   ][5][kwait] parent 5 reaped child 45, status 0
+[proc   ][5][freeproc] freeing pid 45 (forktest), slot 42
+[proc   ][5][kwait] parent 5 reaped child 46, status 0
+[proc   ][5][freeproc] freeing pid 46 (forktest), slot 43
+[proc   ][5][kwait] parent 5 reaped child 47, status 0
+[proc   ][5][freeproc] freeing pid 47 (forktest), slot 44
+[proc   ][5][kwait] parent 5 reaped child 48, status 0
+[proc   ][5][freeproc] freeing pid 48 (forktest), slot 45
+[proc   ][5][kwait] parent 5 reaped child 49, status 0
+[proc   ][5][freeproc] freeing pid 49 (forktest), slot 46
+[proc   ][5][kwait] parent 5 reaped child 50, status 0
+[proc   ][5][freeproc] freeing pid 50 (forktest), slot 47
+[proc   ][5][kwait] parent 5 reaped child 51, status 0
+[proc   ][5][freeproc] freeing pid 51 (forktest), slot 48
+[proc   ][5][kwait] parent 5 reaped child 52, status 0
+[proc   ][5][freeproc] freeing pid 52 (forktest), slot 49
+[proc   ][5][kwait] parent 5 reaped child 53, status 0
+[proc   ][5][freeproc] freeing pid 53 (forktest), slot 50
+[proc   ][5][kwait] parent 5 reaped child 54, status 0
+[proc   ][5][freeproc] freeing pid 54 (forktest), slot 51
+[proc   ][5][kwait] parent 5 reaped child 55, status 0
+[proc   ][5][freeproc] freeing pid 55 (forktest), slot 52
+[proc   ][5][kwait] parent 5 reaped child 56, status 0
+[proc   ][5][freeproc] freeing pid 56 (forktest), slot 53
+[proc   ][5][kwait] parent 5 reaped child 57, status 0
+[proc   ][5][freeproc] freeing pid 57 (forktest), slot 54
+[proc   ][5][kwait] parent 5 reaped child 58, status 0
+[proc   ][5][freeproc] freeing pid 58 (forktest), slot 55
+[proc   ][5][kwait] parent 5 reaped child 59, status 0
+[proc   ][5][freeproc] freeing pid 59 (forktest), slot 56
+[proc   ][5][kwait] parent 5 reaped child 60, status 0
+[proc   ][5][freeproc] freeing pid 60 (forktest), slot 57
+[proc   ][5][kwait] parent 5 reaped child 61, status 0
+[proc   ][5][freeproc] freeing pid 61 (forktest), slot 58
+[proc   ][5][kwait] parent 5 reaped child 62, status 0
+[proc   ][5][freeproc] freeing pid 62 (forktest), slot 59
+[proc   ][5][kwait] parent 5 reaped child 63, status 0
+[proc   ][5][freeproc] freeing pid 63 (forktest), slot 60
+[proc   ][5][kwait] parent 5 reaped child 64, status 0
+[proc   ][5][freeproc] freeing pid 64 (forktest), slot 61
+[proc   ][5][kwait] parent 5 reaped child 65, status 0
+[proc   ][5][freeproc] freeing pid 65 (forktest), slot 62
+[proc   ][5][kwait] parent 5 reaped child 66, status 0
+[proc   ][5][freeproc] freeing pid 66 (forktest), slot 63
+fork test OK
+[proc   ][5][kexit] pid 5 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 5, status 0
+[proc   ][2][freeproc] freeing pid 5 (forktest), slot 2
+$

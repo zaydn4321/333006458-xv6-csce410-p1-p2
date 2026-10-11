@@ -1,0 +1,56 @@
+xv6 kernel is booting
+
+hart 1 starting
+hart 2 starting
+init: starting sh
+$ dbg on proc
+mask  0x1 proc
+level 3 (info)
+pid   any
+[proc   ][3][kexit] pid 3 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 3, status 0
+$ dbg pid 2
+[proc   ][2][kfork] parent 2 forked child 4, copied 20480 bytes
+[proc   ][4][kexec] pid 4: exec dbg, argc 3, sz 20480
+mask  0x1 proc
+level 3 (info)
+pid   2 only
+[proc   ][2][kwait] parent 2 reaped child 4, status 0
+$ echo hi
+[proc   ][2][kfork] parent 2 forked child 5, copied 20480 bytes
+hi
+[proc   ][2][kwait] parent 2 reaped child 5, status 0
+$ dbg pid off
+[proc   ][2][kfork] parent 2 forked child 6, copied 20480 bytes
+mask  0x1 proc
+level 3 (info)
+pid   any
+[proc   ][6][kexit] pid 6 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 6, status 0
+$ echo hi
+[proc   ][2][kfork] parent 2 forked child 7, copied 20480 bytes
+[proc   ][7][kexec] pid 7: exec echo, argc 2, sz 16384
+hi
+[proc   ][7][kexit] pid 7 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 7, status 0
+$ dbg pid abc
+[proc   ][2][kfork] parent 2 forked child 8, copied 20480 bytes
+[proc   ][8][kexec] pid 8: exec dbg, argc 3, sz 20480
+dbg: bad pid abc
+[proc   ][8][kexit] pid 8 exiting, status 1, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 8, status 1
+$ dbg pid
+[proc   ][2][kfork] parent 2 forked child 9, copied 20480 bytes
+[proc   ][9][kexec] pid 9: exec dbg, argc 2, sz 20480
+usage:
+  dbg                 show current setting
+  dbg on <cat>...     enable categories
+  dbg off <cat>...    disable categories
+  dbg only <cat>...   enable exactly these
+  dbg level <lvl>     set detail level
+  dbg pid <n>|off     only log from one process
+categories: proc sched syscall trap vm fs dev all
+levels: off err warn info trace
+[proc   ][9][kexit] pid 9 exiting, status 1, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 9, status 1
+$

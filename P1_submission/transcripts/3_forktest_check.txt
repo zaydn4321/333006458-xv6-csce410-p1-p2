@@ -1,0 +1,31 @@
+Leak check for 3_forktest.txt (run on the host, over the saved transcript)
+
+$ grep -o 'allocated pid [0-9]*' 3_forktest.txt | awk '{print $3}' | sort -n > alloc
+$ grep -o 'forked child [0-9]*'  3_forktest.txt | awk '{print $3}' | sort -n > forked
+$ grep -o 'pid [0-9]* exiting'   3_forktest.txt | awk '{print $2}' | sort -n > exited
+$ grep -o 'reaped child [0-9]*'  3_forktest.txt | awk '{print $3}' | sort -n > reaped
+$ grep -o 'freeing pid [0-9]*'   3_forktest.txt | awk '{print $3}' | sort -n > freed
+
+counts: allocated 62  forked 63  exited 64  reaped 64  freed 63
+
+$ comm -23 forked exited      # forked but never exited
+(end)
+$ comm -23 forked reaped      # forked but never reaped
+(end)
+$ comm -23 alloc freed        # allocated but never freed = leak
+(end)
+$ uniq -d freed               # freed twice = double free
+(end)
+$ comm -13 alloc freed        # freed but alloc not logged
+4
+(end)
+
+Why the counts are off by one or two: logging was switched on by dbg
+commands that were themselves running at the time.
+  pid 3 = "dbg on proc". forked before the mask was set, so only its
+          exit/reap show up (that is the extra exit and reap).
+  pid 4 = "dbg level trace". forked while the level was still info, so
+          its fork logged but allocproc (a trace message) did not. it
+          was freed after the level went up, so the free shows.
+Every pid forked while logging was on exited, was reaped, and was freed
+exactly once.

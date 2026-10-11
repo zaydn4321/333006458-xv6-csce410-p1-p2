@@ -1,0 +1,58 @@
+xv6 kernel is booting
+
+hart 2 starting
+hart 1 starting
+init: starting sh
+$ dbg on proc
+mask  0x1 proc
+level 3 (info)
+pid   any
+[proc   ][3][kexit] pid 3 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 3, status 0
+$ kill 99
+[proc   ][2][kfork] parent 2 forked child 4, copied 20480 bytes
+[proc   ][4][kexec] pid 4: exec kill, argc 2, sz 16384
+[proc   ][4][kkill] pid 4 tried to kill 99, not found
+[proc   ][4][kexit] pid 4 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 4, status 0
+$ nosuchprog
+[proc   ][2][kfork] parent 2 forked child 5, copied 20480 bytes
+[proc   ][5][kexec] pid 5: exec nosuchprog: no such file
+exec nosuchprog failed
+[proc   ][5][kexit] pid 5 exiting, status 0, 0 reparented
+[proc   ][2][kwait] parent 2 reaped child 5, status 0
+$ dbg level warn
+[proc   ][2][kfork] parent 2 forked child 6, copied 20480 bytes
+[proc   ][6][kexec] pid 6: exec dbg, argc 3, sz 20480
+mask  0x1 proc
+level 2 (warn)
+pid   any
+$ echo hi
+hi
+$ kill 99
+[proc   ][8][kkill] pid 8 tried to kill 99, not found
+$ dbg level err
+mask  0x1 proc
+level 1 (err)
+pid   any
+$ kill 99
+$ nosuchprog
+[proc   ][11][kexec] pid 11: exec nosuchprog: no such file
+exec nosuchprog failed
+$ dbg on bogus
+dbg: unknown category bogus
+$ dbg level loud
+dbg: unknown level loud
+$ dbg on
+dbg: on needs a category
+$ dbg wat
+usage:
+  dbg                 show current setting
+  dbg on <cat>...     enable categories
+  dbg off <cat>...    disable categories
+  dbg only <cat>...   enable exactly these
+  dbg level <lvl>     set detail level
+  dbg pid <n>|off     only log from one process
+categories: proc sched syscall trap vm fs dev all
+levels: off err warn info trace
+$
