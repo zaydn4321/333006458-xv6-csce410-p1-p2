@@ -33,6 +33,9 @@ struct {
   struct spinlock lock;
   struct proc *head[NB_PRIORITY_LEVELS];
   struct proc *tail[NB_PRIORITY_LEVELS];
+  // dispatch log, written in rq_pop since it already holds the lock
+  struct schedev log[SCHEDLOG_N];
+  uint nlog; // logged since last read, can pass SCHEDLOG_N
 } rq;
 
 static void
@@ -59,19 +62,20 @@ static struct proc *
 rq_pop(void)
 {
   struct proc *p;
-  int pick = -1, old = -1;
+  int first = -1, old = -1, pick;
   uint now = __atomic_load_n(&ticks, __ATOMIC_RELAXED);
 
   acquire(&rq.lock);
   for (int i = 0; i < NB_PRIORITY_LEVELS; i++) {
     if ((p = rq.head[i]) == 0)
       continue;
-    if (pick < 0)
-      pick = i;
+    if (first < 0)
+      first = i;
     if (old < 0 || now - p->qtime > now - rq.head[old]->qtime)
       old = i;
   }
-  if (pick >= 0 && now - rq.head[old]->qtime >= STARVE_TICKS)
+  pick = first;
+  if (first >= 0 && now - rq.head[old]->qtime >= STARVE_TICKS)
     pick = old;
   p = 0;
   if (pick >= 0) {
@@ -80,9 +84,40 @@ rq_pop(void)
     if (rq.head[pick] == 0)
       rq.tail[pick] = 0;
     p->qnext = 0;
+
+    struct schedev *e = &rq.log[rq.nlog++ % SCHEDLOG_N];
+    e->tick = now;
+    e->pid = p->pid;
+    e->prio = pick;
+    e->starved = pick != first;
   }
   release(&rq.lock);
   return p;
+}
+
+// copies the logged dispatches oldest first to user addr dst and clears the
+// log. returns how many were logged since the last read (more than
+// SCHEDLOG_N means the oldest got overwritten), -1 on a bad dst
+int
+schedlog_read(uint64 dst)
+{
+  struct proc *me = myproc();
+  int n, ret;
+
+  acquire(&rq.lock);
+  ret = rq.nlog;
+  n = ret < SCHEDLOG_N ? ret : SCHEDLOG_N;
+  for (int i = 0; i < n; i++) {
+    struct schedev *e = &rq.log[(rq.nlog - n + i) % SCHEDLOG_N];
+    if (copyout(me->pagetable, me->sz, dst + i * sizeof(*e), (char *)e,
+                sizeof(*e)) < 0) {
+      ret = -1;
+      break;
+    }
+  }
+  rq.nlog = 0;
+  release(&rq.lock);
+  return ret;
 }
 
 // every RUNNABLE -> goes through here. caller holds p->lock

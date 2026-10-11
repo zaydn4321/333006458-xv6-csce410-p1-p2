@@ -71,6 +71,9 @@ sys_debugctl(void)
 
   case DBGCTL_SCHEDCHK:
     return rq_check();
+
+  case DBGCTL_SCHEDLOG:
+    return schedlog_read(arg);
   }
 
   return -1;

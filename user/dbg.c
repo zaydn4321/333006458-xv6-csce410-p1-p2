@@ -13,6 +13,7 @@ usage(void)
   printf("  dbg only <cat>...   enable exactly these\n");
   printf("  dbg level <lvl>     set detail level\n");
   printf("  dbg pid <n>|off     only log from one process\n");
+  printf("  dbg trace           print and clear the scheduler dispatch log\n");
 
   printf("categories:");
   for (int i = 0; i < DBG_NCATS; i++)
@@ -130,6 +131,22 @@ main(int argc, char *argv[])
     }
     debugctl(DBGCTL_SETLEVEL, level);
     show();
+    exit(0);
+  }
+
+  if (strcmp(argv[1], "trace") == 0) {
+    static struct schedev ev[SCHEDLOG_N];
+    int n = debugctl(DBGCTL_SCHEDLOG, (uint64)ev);
+    if (n < 0) {
+      printf("dbg: trace read failed\n");
+      exit(1);
+    }
+    int k = n < SCHEDLOG_N ? n : SCHEDLOG_N;
+    if (n > k)
+      printf("(%d older dropped)\n", n - k);
+    for (int i = 0; i < k; i++)
+      printf("tick %d pid %d prio %d%s\n", ev[i].tick, ev[i].pid, ev[i].prio,
+             ev[i].starved ? " starved" : "");
     exit(0);
   }
 

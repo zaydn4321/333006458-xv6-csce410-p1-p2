@@ -98,6 +98,8 @@ test_order(void)
   check(buf[0] == 'H' && buf[1] == 'L', "prio 0 finishes before prio 2");
 }
 
+static struct schedev ev[SCHEDLOG_N];
+
 // parent hogs the cpu at prio 0 without sleeping. without starvation
 // prevention the lowest prio child only runs once the parent stops
 static void
@@ -108,6 +110,7 @@ test_starve(void)
 
   pipe(fds);
   setpriority(0);
+  debugctl(DBGCTL_SCHEDLOG, (uint64)ev); // clear it
   int pid = fork();
   if (pid == 0) {
     close(fds[0]);
@@ -125,6 +128,12 @@ test_starve(void)
   wait(0);
   setpriority(DEFAULT_PRIORITY);
   check(tchild >= 0 && tchild < end, "low prio child runs while prio 0 spins");
+
+  int n = debugctl(DBGCTL_SCHEDLOG, (uint64)ev), logged = 0;
+  for (int i = 0; i < n && i < SCHEDLOG_N; i++)
+    if (ev[i].pid == pid && ev[i].starved)
+      logged = 1;
+  check(logged, "trace shows the child picked as starved");
 }
 
 int

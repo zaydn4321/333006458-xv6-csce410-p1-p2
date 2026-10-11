@@ -27,6 +27,16 @@
 #define DBGCTL_GETPID   4
 #define DBGCTL_SETPID   5
 #define DBGCTL_SCHEDCHK 6 // run rq_check, returns # of problems
+#define DBGCTL_SCHEDLOG 7 // copy dispatch log to arg and clear it, returns # since last read
+
+// one entry per dispatch, recorded in rq_pop. ring, oldest dropped when full
+#define SCHEDLOG_N 512
+struct schedev {
+  uint tick;
+  int pid;
+  char prio;
+  char starved; // picked by starvation prevention, not by priority
+};
 
 struct dbgcat {
   uint64 bit;
