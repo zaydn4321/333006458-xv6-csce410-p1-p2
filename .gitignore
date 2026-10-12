@@ -10,3 +10,8 @@ _*
 /user/usys.S
 .gdbinit
 TAGS
+.DS_Store
+*.tar
+/P1_submission/
+/P2_submission/
+test-xv6.out
