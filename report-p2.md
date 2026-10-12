@@ -18,7 +18,7 @@ I used the xv6 book (the scheduling chapter and the sleep/wakeup section), the O
 
 **b. How were they useful?**
 
-The xv6 book and the source code showed me every place a process becomes RUNNABLE and how the scheduler and sched() hand p->lock back and forth, which is what my queue design is based on. I used Claude Code to talk through the lock order, to help write and debug the starvation prevention, the dispatch trace and schedtest, and to run the tests over and over in QEMU. This report was also written with the help of Claude Code. I reviewed and tested everything it produced.
+The xv6 book and the source code showed me every place a process becomes RUNNABLE and how the scheduler and sched() hand p->lock back and forth, which is what my queue design is based on. I used Claude Code to talk through the lock order, to talk through and debug the starvation prevention, and to run the tests over and over in QEMU. This report was also written with the help of Claude Code. I reviewed and tested everything it produced.
 
 **c. What is your estimate for how much time these resources saved you?**
 
