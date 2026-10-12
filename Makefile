@@ -158,6 +158,7 @@ UPROGS=\
 	$U/_sync\
 	$U/_dbg\
 	$U/_prtest\
+	$U/_schedtest\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
