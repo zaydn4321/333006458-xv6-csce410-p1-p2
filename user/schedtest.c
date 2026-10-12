@@ -6,6 +6,8 @@
 #include "kernel/debug.h"
 #include "user/user.h"
 
+#define LOW (NB_PRIORITY_LEVELS - 1)
+
 static int fails = 0;
 static struct schedev ev[SCHEDLOG_N];
 
@@ -45,7 +47,7 @@ test_rr(void)
   debugctl(DBGCTL_SCHEDLOG, (uint64)ev); // clear it
   for (int i = 0; i < 3; i++) {
     if ((pids[i] = fork()) == 0) {
-      setpriority(2);
+      setpriority(LOW);
       work(5);
       exit(0);
     }
@@ -58,7 +60,7 @@ test_rr(void)
   check(n <= SCHEDLOG_N, "trace didnt overflow");
   for (int i = 0; i < n && i < SCHEDLOG_N; i++)
     for (int c = 0; c < 3; c++)
-      if (ev[i].pid == pids[c] && ev[i].prio == 2) {
+      if (ev[i].pid == pids[c] && ev[i].prio == LOW) {
         if (cnt[c]++ == 0)
           first[c] = i;
         last[c] = i;
@@ -66,7 +68,7 @@ test_rr(void)
 
   int ok = 1, maxfirst = 0, minlast = SCHEDLOG_N;
   for (int c = 0; c < 3; c++) {
-    printf("schedtest: pid %d ran %d times at prio 2\n", pids[c], cnt[c]);
+    printf("schedtest: pid %d ran %d times at prio %d\n", pids[c], cnt[c], LOW);
     if (cnt[c] < 2) {
       ok = 0;
       continue;

@@ -71,6 +71,10 @@ CFLAGS += $(DETFLAGS)
 ifeq ($(DBG),0)
 CFLAGS += -DDBG_DISABLE
 endif
+# make NB_PRIORITY_LEVELS=n, needs a make clean since deps dont track flags
+ifdef NB_PRIORITY_LEVELS
+CFLAGS += -DNB_PRIORITY_LEVELS=$(NB_PRIORITY_LEVELS)
+endif
 CFLAGS += -march=rv64gc
 CFLAGS += -std=gnu99
 CFLAGS += -MD

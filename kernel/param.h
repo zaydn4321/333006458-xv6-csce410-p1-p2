@@ -13,7 +13,7 @@
 #define MAXPATH     128               // maximum file path name
 #define USERSTACK   1                 // user stack pages
 
-// override with make CFLAGS+=-DNB_PRIORITY_LEVELS=n
+// override with make NB_PRIORITY_LEVELS=n (after make clean)
 #ifndef NB_PRIORITY_LEVELS
 #define NB_PRIORITY_LEVELS 4
 #endif

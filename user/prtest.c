@@ -56,17 +56,17 @@ test_inherit(void)
 {
   int st = -1;
 
-  setpriority(2);
+  setpriority(0); // 0 is never the default
   int pid = fork();
   if (pid == 0)
     exit(getpriority());
   wait(&st);
   setpriority(DEFAULT_PRIORITY);
-  check(pid > 0 && st == 2, "fork child inherits priority");
+  check(pid > 0 && st == 0, "fork child inherits priority");
 }
 
 // low forks first so plain round robin would let it go first.
-// with priorities the prio 0 child should finish before the prio 2 one
+// with priorities the prio 0 child should finish before the lowest prio one
 static void
 test_order(void)
 {
@@ -79,7 +79,7 @@ test_order(void)
     int pid = fork();
     if (pid == 0) {
       close(fds[0]);
-      setpriority(i == 0 ? 2 : 0);
+      setpriority(i == 0 ? NB_PRIORITY_LEVELS - 1 : 0);
       spin(50000000);
       write(fds[1], i == 0 ? "L" : "H", 1);
       exit(0);
@@ -95,7 +95,7 @@ test_order(void)
   setpriority(DEFAULT_PRIORITY);
   printf("prtest: finish order %s\n", buf);
   check(bad == 0, "rq_check clean with children queued");
-  check(buf[0] == 'H' && buf[1] == 'L', "prio 0 finishes before prio 2");
+  check(buf[0] == 'H' && buf[1] == 'L', "prio 0 finishes before lowest prio");
 }
 
 static struct schedev ev[SCHEDLOG_N];
