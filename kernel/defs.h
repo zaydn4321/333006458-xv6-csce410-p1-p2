@@ -59,6 +59,9 @@ void            ireclaim(int);
 // kalloc.c
 void*           kalloc(void);
 void            kfree(void *);
+void*           kalloc_contiguous(int);
+void            kfree_contiguous(void *, int);
+void            kalloctest(void);
 void            kinit(void);
 
 // log.c

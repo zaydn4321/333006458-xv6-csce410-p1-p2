@@ -15,3 +15,6 @@ TAGS
 /P1_submission/
 /P2_submission/
 test-xv6.out
+/P3_submission/
+*.zip
+/p3-raw-notes.md

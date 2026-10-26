@@ -75,6 +75,10 @@ endif
 ifdef NB_PRIORITY_LEVELS
 CFLAGS += -DNB_PRIORITY_LEVELS=$(NB_PRIORITY_LEVELS)
 endif
+# make KALLOC_TEST=1 runs the contiguous alloc self-test at boot (make clean first)
+ifdef KALLOC_TEST
+CFLAGS += -DKALLOC_TEST
+endif
 CFLAGS += -march=rv64gc
 CFLAGS += -std=gnu99
 CFLAGS += -MD

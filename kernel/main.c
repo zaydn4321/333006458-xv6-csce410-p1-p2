@@ -17,6 +17,9 @@ main()
     printk("xv6 kernel is booting\n");
     printk("\n");
     kinit();            // physical page allocator
+#ifdef KALLOC_TEST
+    kalloctest();
+#endif
     kvminit();          // create kernel page table
     kvminithart();      // turn on paging
     procinit();         // process table
